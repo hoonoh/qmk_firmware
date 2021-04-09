@@ -1,14 +1,28 @@
 #include QMK_KEYBOARD_H
 
-bool lctl_down = false;
-bool shift_down = false;
-
 enum custom_keycodes {
   ESC = SAFE_RANGE
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  static uint16_t caps_timer;
+  static bool lctl_down = false;
+  static bool shift_down = false;
+
   switch (keycode) {
+    // caps lock hold triggers layer 1
+    case KC_CAPS:
+      if(record->event.pressed){
+        caps_timer = timer_read();
+        layer_on(1);
+      } else {
+        if (timer_elapsed(caps_timer) < TAPPING_TERM) {
+          tap_code(KC_CAPS);
+        }
+        layer_off(1);
+      }
+      return false;
+
     case ESC:
       if (record->event.pressed) {
         if(lctl_down){
@@ -27,7 +41,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           unregister_code(KC_ESC);
         }
       }
-      return true;
+      return false;
+
     case KC_LCTL:
       if (record->event.pressed) {
         lctl_down = true;
@@ -35,6 +50,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         lctl_down = false;
       }
       return true;
+
     case KC_LSFT:
     case KC_RSFT:
       if (record->event.pressed) {
