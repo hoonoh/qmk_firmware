@@ -97,6 +97,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return true;
       break;
 
+    // because how LSFT is handled in layer1, re-enable left shift key on cursor movement on layer1
+    case KC_PGUP:
+    case KC_PGDN:
+    case KC_LEFT:
+    case KC_DOWN:
+    case KC_UP:
+    case KC_RGHT:
+      if (record->event.pressed) {
+        if(lshift_down && layer_state_is(1)) register_code(KC_LSFT);
+      } else {
+        if(lshift_down && layer_state_is(1)) unregister_code(KC_LSFT);
+      }
+      return true;
+      break;
+
     default:
       return true;
   }
