@@ -104,6 +104,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case KC_DOWN:
     case KC_UP:
     case KC_RGHT:
+    case KC_HOME:
+    case KC_END:
       if (record->event.pressed) {
         if(lshift_down && layer_state_is(1)) register_code(KC_LSFT);
       } else {
